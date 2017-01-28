@@ -16,5 +16,21 @@
   "bugs": {
     "url": "https://github.com/GingerTommy/slamdash/issues"
   },
-  "homepage": "https://github.com/GingerTommy/slamdash#readme"
+  "homepage": "https://github.com/GingerTommy/slamdash#readme",
+  "dependencies": {
+    "@types/dc": "0.0.21",
+    "@types/handlebars": "^4.0.31",
+    "bootstrap": "^3.3.7",
+    "dc": "^2.1.2",
+    "handlebars": "^4.0.6",
+    "keen-dashboards": "^0.1.1"
+  },
+  "devDependencies": {
+    "ts-loader": "^2.0.0",
+    "tslint": "^4.4.2",
+    "tslint-loader": "^3.3.0",
+    "typescript": "^2.1.5",
+    "webpack": "^1.14.0",
+    "yargs": "^6.6.0"
+  }
 }
