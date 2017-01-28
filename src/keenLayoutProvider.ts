@@ -3,7 +3,7 @@ class KeenLayoutProvider implements LayoutProvider {
 
     public getNamedLayout(name: string, cells: Array<CellInfo>): string {
         this.cells = cells;
-        this[name]();
+        return this[name]();
     }
 
     private getChartWrapper(index: number): string {
@@ -14,7 +14,7 @@ class KeenLayoutProvider implements LayoutProvider {
         const cell = this.cells[index];
         const title = cell.title ? `<div class="chart-title">${cell.title}</div>` : '';
         const notes = cell.description ? `<div class="chart-notes">${cell.description}</div>` : '';
-        return `<div class="chart-wrapper">${title}<div class="chart-stage"><div id="grid-${index}"></div></div>${notes}</div>`;
+        return `<div class="chart-wrapper">${title}<div class="chart-stage"><div id="cell-${index}"></div></div>${notes}</div>`;
     }
 
     private heroSidebar(): string {

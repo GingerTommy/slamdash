@@ -1,7 +1,7 @@
+import * as d3 from 'd3';
 import * as dc from 'dc';
 
 class DCChartProvider implements ChartProvider {
-    private dimensionGroups: { [id: string]: DimensionGroup } = {};
     private groupMode: string = 'count';
     private hasRendered: boolean = false;
     private index: CrossFilter.CrossFilter<any> = crossfilter([]);
@@ -19,6 +19,10 @@ class DCChartProvider implements ChartProvider {
 
         if (config.chartType === 'pie') {
             return this.pieChart(selector, config as PieChartConfig);
+        }
+
+        if (config.chartType === 'row') {
+            return this.rowChart(selector, config as RowChartConfig);
         }
     }
 
@@ -40,20 +44,31 @@ class DCChartProvider implements ChartProvider {
             dc.renderAll();
         }
 
+        this.hasRendered = true;
         return this;
     }
 
     private barChart(selector: string, config: BarChartConfig): dc.BarChart {
-        const dimensionGroup = this.getDimensionGroup(config.groupBy);
+        const dimensionGroup = this.createDimensionGroup(config.groupBy);
         const chart = dc.barChart(selector);
         chart
             .dimension(dimensionGroup.dimension)
             .group(dimensionGroup.group);
+        
+        if (config.isOrdinal) {
+            chart
+                .x(d3.scale.ordinal())
+                .xUnits(dc.units.ordinal)
+        }
+        else {
+
+        }
+
         return chart;
     }
 
     private createDimensionGroup(dimensionProperty: string): DimensionGroup {
-        const dimension = this.index.dimension(d => d[dimensionProperty]);
+        const dimension = this.index.dimension(dc.pluck(dimensionProperty));
         const group = this.groupMode === 'sum'
             ? dimension.group().reduceSum(dc.pluck(this.sumBy))
             : dimension.group().reduceCount();
@@ -61,32 +76,37 @@ class DCChartProvider implements ChartProvider {
             dimension: dimension,
             group: group
         };
-        this.dimensionGroups[dimensionProperty] = dimensionGroup;
         return dimensionGroup;
     }
 
-    private getDimensionGroup(dimensionProperty: string): DimensionGroup {
-        return this.dimensionGroups[dimensionProperty]
-            || this.createDimensionGroup(dimensionProperty);
-    }
-
     private pieChart(selector: string, config: PieChartConfig): dc.PieChart {
-        const dimensionGroup = this.getDimensionGroup(config.groupBy);
+        const dimensionGroup = this.createDimensionGroup(config.groupBy);
         const chart = dc.pieChart(selector);
         chart
             .dimension(dimensionGroup.dimension)
             .group(dimensionGroup.group)
             .radius(config.radius || 100)
             .innerRadius(config.innerRadius || 0);
+        
+        if (config.cap) {
+            chart.slicesCap(config.cap);
+        }
+
         return chart;
     }
 
     private rowChart(selector: string, config: RowChartConfig): dc.RowChart {
-        const dimensionGroup = this.getDimensionGroup(config.groupBy);
+        const dimensionGroup = this.createDimensionGroup(config.groupBy);
         const chart = dc.rowChart(selector);
         chart
             .dimension(dimensionGroup.dimension)
-            .group(dimensionGroup.group);
+            .group(dimensionGroup.group)
+            .xAxis().ticks(4);
+        
+        if (config.elasticAxis) {
+            chart.elasticX(true);
+        }
+
         return chart;
     }
 }
