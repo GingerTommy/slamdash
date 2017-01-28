@@ -80,6 +80,15 @@ class DCChartProvider implements ChartProvider {
             .innerRadius(config.innerRadius || 0);
         return chart;
     }
+
+    private rowChart(selector: string, config: RowChartConfig): dc.RowChart {
+        const dimensionGroup = this.getDimensionGroup(config.groupBy);
+        const chart = dc.rowChart(selector);
+        chart
+            .dimension(dimensionGroup.dimension)
+            .group(dimensionGroup.group);
+        return chart;
+    }
 }
 
 export {DCChartProvider as dcChartProvider};

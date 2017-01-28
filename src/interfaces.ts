@@ -41,3 +41,7 @@ interface PieChartConfig extends ChartConfig {
     radius?: number;
     innerRadius?: number;
 }
+
+interface RowChartConfig extends ChartConfig {
+    elasticAxis?: boolean;
+}
