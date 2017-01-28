@@ -42,6 +42,7 @@ class DCChartProvider implements ChartProvider {
         }
         else {
             dc.renderAll();
+            this.registerResize();
         }
 
         this.hasRendered = true;
@@ -64,6 +65,7 @@ class DCChartProvider implements ChartProvider {
 
         }
 
+        (chart as any).canResize = true;
         return chart;
     }
 
@@ -85,6 +87,8 @@ class DCChartProvider implements ChartProvider {
         chart
             .dimension(dimensionGroup.dimension)
             .group(dimensionGroup.group)
+            .height(config.height || null)
+            .width(config.width || null)
             .radius(config.radius || 100)
             .innerRadius(config.innerRadius || 0);
         
@@ -92,6 +96,7 @@ class DCChartProvider implements ChartProvider {
             chart.slicesCap(config.cap);
         }
 
+        (chart as any).canResize = true;
         return chart;
     }
 
@@ -101,13 +106,37 @@ class DCChartProvider implements ChartProvider {
         chart
             .dimension(dimensionGroup.dimension)
             .group(dimensionGroup.group)
-            .xAxis().ticks(4);
+            .height(config.height || null)
+            .width(config.width || null)
+            .xAxis().ticks(config.ticks || 4);
         
         if (config.elasticAxis) {
             chart.elasticX(true);
         }
 
+        (chart as any).canResize = false;
         return chart;
+    }
+
+    private registerResize(): void {
+        const handler = () => {
+            dc.chartRegistry.list().forEach((chart, index) => {
+                if (!(chart as any).canResize) {
+                    return;
+                }
+                
+                const bbox: ClientRect = (chart as any).root().node().parentNode.getBoundingClientRect();
+                chart.width(bbox.width - 20);
+
+                try {
+                    (chart as any).rescale();
+                }
+                catch (ex) { }
+                chart.redraw();
+            });
+        };
+        handler();
+        window.addEventListener('resize', handler, false);
     }
 }
 

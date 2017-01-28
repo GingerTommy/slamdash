@@ -163,6 +163,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	        else {
 	            dc.renderAll();
+	            this.registerResize();
 	        }
 	        this.hasRendered = true;
 	        return this;
@@ -180,6 +181,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	        else {
 	        }
+	        chart.canResize = true;
 	        return chart;
 	    };
 	    DCChartProvider.prototype.createDimensionGroup = function (dimensionProperty) {
@@ -199,11 +201,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	        chart
 	            .dimension(dimensionGroup.dimension)
 	            .group(dimensionGroup.group)
+	            .height(config.height || null)
+	            .width(config.width || null)
 	            .radius(config.radius || 100)
 	            .innerRadius(config.innerRadius || 0);
 	        if (config.cap) {
 	            chart.slicesCap(config.cap);
 	        }
+	        chart.canResize = true;
 	        return chart;
 	    };
 	    DCChartProvider.prototype.rowChart = function (selector, config) {
@@ -212,11 +217,32 @@ return /******/ (function(modules) { // webpackBootstrap
 	        chart
 	            .dimension(dimensionGroup.dimension)
 	            .group(dimensionGroup.group)
-	            .xAxis().ticks(4);
+	            .height(config.height || null)
+	            .width(config.width || null)
+	            .xAxis().ticks(config.ticks || 4);
 	        if (config.elasticAxis) {
 	            chart.elasticX(true);
 	        }
+	        chart.canResize = false;
 	        return chart;
+	    };
+	    DCChartProvider.prototype.registerResize = function () {
+	        var handler = function () {
+	            dc.chartRegistry.list().forEach(function (chart, index) {
+	                if (!chart.canResize) {
+	                    return;
+	                }
+	                var bbox = chart.root().node().parentNode.getBoundingClientRect();
+	                chart.width(bbox.width - 20);
+	                try {
+	                    chart.rescale();
+	                }
+	                catch (ex) { }
+	                chart.redraw();
+	            });
+	        };
+	        handler();
+	        window.addEventListener('resize', handler, false);
 	    };
 	    return DCChartProvider;
 	}());

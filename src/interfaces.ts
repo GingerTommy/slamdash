@@ -8,6 +8,8 @@ interface ChartConfig {
     chartType: string;
     title?: string;
     description?: string;
+    height?: number;
+    width?: number;
 }
 
 interface ChartProvider {
@@ -58,4 +60,5 @@ interface PieChartConfig extends ChartConfig, CappedChart, GroupedChart, Categor
 
 interface RowChartConfig extends ChartConfig, CappedChart, GroupedChart, CategorizedChart {
     elasticAxis?: boolean;
+    ticks?: number;
 }

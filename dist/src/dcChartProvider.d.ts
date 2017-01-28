@@ -12,5 +12,6 @@ declare class DCChartProvider implements ChartProvider {
     private createDimensionGroup(dimensionProperty);
     private pieChart(selector, config);
     private rowChart(selector, config);
+    private registerResize();
 }
 export { DCChartProvider as dcChartProvider };

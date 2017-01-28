@@ -7,12 +7,14 @@
                 chartType: 'row',
                 title: 'Sum by Title',
                 description: 'Total number of items, grouped by title',
-                groupBy: 'title'
+                groupBy: 'title',
+                height: 640
             }, {
                 chartType: 'bar',
                 title: 'Sum by Category',
                 description: 'Total number of items, grouped by category',
                 groupBy: 'category',
+                height: 120,
                 isOrdinal: true
             }, {
                 chartType: 'pie',
@@ -21,7 +23,8 @@
                 groupBy: 'category',
                 radius: 55,
                 innerRadius: 40,
-                cap: 1
+                height: 120,
+                width: 350
             }, {
                 chartType: 'number',
                 title: 'Movies',
