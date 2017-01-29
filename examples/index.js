@@ -30,6 +30,26 @@
                 groupBy: 'category',
                 height: 120,
                 isOrdinal: true
+            }, {
+                chartType: 'number',
+                title: 'Count of Movie Records',
+                numberFormat: 'g',
+                filter: function (d) { return d.category === 'Movies'; },
+                template: '<div class="number-display">%number</div>'
+            }, {
+                chartType: 'number',
+                title: 'Sum of Movies',
+                filter: function (d) { return d.category === 'Movies'; },
+                numberFormat: 'g',
+                sumBy: 'count',
+                template: '<div class="number-display">%number</div>'
+            }, {
+                chartType: 'number',
+                title: 'Sum of TV',
+                filter: function (d) { return d.category === 'TV'; },
+                numberFormat: 'g',
+                sumBy: 'count',
+                template: '<div class="number-display">%number</div>'
             }
         ]
     };

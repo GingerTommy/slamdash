@@ -10,7 +10,10 @@ declare class DCChartProvider implements ChartProvider {
     refresh(): ChartProvider;
     private barChart(selector, config);
     private createDimensionGroup(dimensionProperty);
+    private getFilteredCount(filter);
+    private getFilteredSum(filter, sumBy);
     private itemTemplate(selector, config);
+    private numberDisplay(selector, config);
     private pieChart(selector, config);
     private rowChart(selector, config);
     private registerResize();

@@ -47,13 +47,25 @@ interface GroupedChart {
     groupBy: string;
 }
 
+interface SortedChart {
+    sortBy: string;
+    sortOrder?: string;
+}
+
 interface BarChartConfig extends ChartConfig, GroupedChart, CategorizedChart {
     isOrdinal?: boolean;
 }
 
-interface ItemTemplateConfig extends ChartConfig, GroupedChart {
+interface ItemTemplateConfig extends ChartConfig, GroupedChart, SortedChart {
     groupTemplate?: string;
     itemTemplate?: string;
+}
+
+interface NumberDisplayConfig extends ChartConfig {
+    filter?: (any) => boolean;
+    numberFormat?: string;
+    template: string;
+    sumBy?: string;
 }
 
 interface PieChartConfig extends ChartConfig, CappedChart, GroupedChart, CategorizedChart {

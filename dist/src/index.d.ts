@@ -1,3 +1,5 @@
+import { adminLayoutProvider } from './adminLayoutProvider';
+export { adminLayoutProvider };
 import { keenLayoutProvider } from './keenLayoutProvider';
 export { keenLayoutProvider };
 import { dcChartProvider } from './dcChartProvider';

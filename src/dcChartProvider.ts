@@ -22,6 +22,10 @@ class DCChartProvider implements ChartProvider {
             return this.itemTemplate(selector, config as ItemTemplateConfig);
         }
 
+        if (config.chartType === 'number') {
+            return this.numberDisplay(selector, config as NumberDisplayConfig);
+        }
+
         if (config.chartType === 'pie') {
             return this.pieChart(selector, config as PieChartConfig);
         }
@@ -86,6 +90,38 @@ class DCChartProvider implements ChartProvider {
         return dimensionGroup;
     }
 
+    private getFilteredCount(filter: (any) => boolean): CrossFilter.GroupAll<any, any> {
+        return this.index.groupAll().reduce<any>(
+            (p, v) => {
+                p.value += filter(v) ? 1 : 0;
+                return p;
+            },
+            (p, v) => {
+                p.value -= filter(v) ? 1 : 0;
+                return p;
+            },
+            () => {
+                return { value: 0 };
+            }
+        );
+    }
+
+    private getFilteredSum(filter: (any) => boolean, sumBy: string): CrossFilter.GroupAll<any, any> {
+        return this.index.groupAll().reduce<any>(
+            (p, v) => {
+                p.value += filter(v) ? v[sumBy] : 0;
+                return p;
+            },
+            (p, v) => {
+                p.value -= filter(v) ? v[sumBy] : 0;
+                return p;
+            },
+            () => {
+                return { value: 0 };
+            }
+        );
+    }
+
     private itemTemplate(selector, config: ItemTemplateConfig): dc.DataGridWidget {
         const chart = dc.dataGrid(selector);
         const itemTemplate = Handlebars.compile(config.itemTemplate || '');
@@ -95,8 +131,35 @@ class DCChartProvider implements ChartProvider {
             .group(d => config.groupBy ? d[config.groupBy] : '')
             .html(d => itemTemplate(d));
        chart.htmlGroup(d => groupTemplate(d));
+
+       if (config.sortBy) {
+           chart.sortBy(dc.pluck(config.sortBy));
+           if (config.sortOrder === 'desc') {
+               chart.order(d3.descending);
+           }
+       }
+
        (chart as any).canResize = false;
        return chart;
+    }
+
+    private numberDisplay(selector: string, config: NumberDisplayConfig): dc.NumberDisplayWidget {
+        const group = config.sumBy
+            ? this.getFilteredSum(config.filter, config.sumBy)
+            : this.getFilteredCount(config.filter);
+        const chart = dc.numberDisplay(selector);
+        chart
+            .valueAccessor(d => d.value)
+            .group(group)
+            .formatNumber(d3.format(config.numberFormat || '.2s'))
+            .html({
+                none: config.template || '%number',
+                one: config.template || '%number',
+                some: config.template || '%number'
+            });
+
+        (chart as any).canResize = false;
+        return chart;
     }
 
     private pieChart(selector: string, config: PieChartConfig): dc.PieChart {
