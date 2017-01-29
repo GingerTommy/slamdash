@@ -44,6 +44,10 @@ interface GroupedChart {
 interface BarChartConfig extends ChartConfig, GroupedChart, CategorizedChart {
     isOrdinal?: boolean;
 }
+interface ItemTemplateConfig extends ChartConfig, GroupedChart {
+    groupTemplate?: string;
+    itemTemplate?: string;
+}
 interface PieChartConfig extends ChartConfig, CappedChart, GroupedChart, CategorizedChart {
     radius?: number;
     innerRadius?: number;

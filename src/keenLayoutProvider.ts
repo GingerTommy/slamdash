@@ -12,6 +12,10 @@ class KeenLayoutProvider implements LayoutProvider {
         }
 
         const cell = this.cells[index];
+        if (cell.hide) {
+            return '';
+        }
+
         const title = cell.title ? `<div class="chart-title">${cell.title}</div>` : '';
         const notes = cell.description ? `<div class="chart-notes">${cell.description}</div>` : '';
         return `<div class="chart-wrapper">${title}<div class="chart-stage"><div id="cell-${index}"></div></div>${notes}</div>`;

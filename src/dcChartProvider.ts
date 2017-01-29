@@ -1,5 +1,6 @@
 import * as d3 from 'd3';
 import * as dc from 'dc';
+import * as handlebars from 'handlebars';
 
 class DCChartProvider implements ChartProvider {
     private groupMode: string = 'count';
@@ -15,6 +16,10 @@ class DCChartProvider implements ChartProvider {
     public addChart(selector: string, config: ChartConfig): any {
         if (config.chartType === 'bar') {
             return this.barChart(selector, config as BarChartConfig);
+        }
+
+        if (config.chartType === 'template') {
+            return this.itemTemplate(selector, config as ItemTemplateConfig);
         }
 
         if (config.chartType === 'pie') {
@@ -79,6 +84,19 @@ class DCChartProvider implements ChartProvider {
             group: group
         };
         return dimensionGroup;
+    }
+
+    private itemTemplate(selector, config: ItemTemplateConfig): dc.DataGridWidget {
+        const chart = dc.dataGrid(selector);
+        const itemTemplate = Handlebars.compile(config.itemTemplate || '');
+        const groupTemplate = Handlebars.compile(config.groupTemplate || '');
+        chart
+            .dimension(this.index.dimension(d => d))
+            .group(d => config.groupBy ? d[config.groupBy] : '')
+            .html(d => itemTemplate(d));
+       chart.htmlGroup(d => groupTemplate(d));
+       (chart as any).canResize = false;
+       return chart;
     }
 
     private pieChart(selector: string, config: PieChartConfig): dc.PieChart {

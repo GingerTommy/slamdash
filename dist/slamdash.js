@@ -88,6 +88,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return '';
 	        }
 	        var cell = this.cells[index];
+	        if (cell.hide) {
+	            return '';
+	        }
 	        var title = cell.title ? "<div class=\"chart-title\">" + cell.title + "</div>" : '';
 	        var notes = cell.description ? "<div class=\"chart-notes\">" + cell.description + "</div>" : '';
 	        return "<div class=\"chart-wrapper\">" + title + "<div class=\"chart-stage\"><div id=\"cell-" + index + "\"></div></div>" + notes + "</div>";
@@ -142,6 +145,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (config.chartType === 'bar') {
 	            return this.barChart(selector, config);
 	        }
+	        if (config.chartType === 'template') {
+	            return this.itemTemplate(selector, config);
+	        }
 	        if (config.chartType === 'pie') {
 	            return this.pieChart(selector, config);
 	        }
@@ -194,6 +200,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	            group: group
 	        };
 	        return dimensionGroup;
+	    };
+	    DCChartProvider.prototype.itemTemplate = function (selector, config) {
+	        var chart = dc.dataGrid(selector);
+	        var itemTemplate = Handlebars.compile(config.itemTemplate || '');
+	        var groupTemplate = Handlebars.compile(config.groupTemplate || '');
+	        chart
+	            .dimension(this.index.dimension(function (d) { return d; }))
+	            .group(function (d) { return config.groupBy ? d[config.groupBy] : ''; })
+	            .html(function (d) { return itemTemplate(d); });
+	        chart.htmlGroup(function (d) { return groupTemplate(d); });
+	        chart.canResize = false;
+	        return chart;
 	    };
 	    DCChartProvider.prototype.pieChart = function (selector, config) {
 	        var dimensionGroup = this.createDimensionGroup(config.groupBy);

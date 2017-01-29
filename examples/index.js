@@ -1,14 +1,28 @@
 (function(slam) {
     var config = {
         selector: '#dashboard',
-        layoutName: 'heroSidebar',
+        layoutName: 'heroThirds',
         charts: [
             {
                 chartType: 'row',
                 title: 'Sum by Title',
                 description: 'Total number of items, grouped by title',
                 groupBy: 'title',
-                height: 640
+                height: 240
+            }, {
+                chartType: 'pie',
+                title: 'Sum by Category',
+                description: 'Total number of items, grouped by the category of media',
+                groupBy: 'category',
+                radius: 100,
+                innerRadius: 75,
+                height: 240
+            }, {
+                chartType: 'template',
+                title: 'Templated data',
+                description: 'Handlebar templated output',
+                groupBy: 'title',
+                groupTemplate: '<ul><h3>{{key}}</h3>{{#values}}<li><strong>{{category}}</strong> - {{count}}</li>{{/values}}</ul>'
             }, {
                 chartType: 'bar',
                 title: 'Sum by Category',
@@ -16,25 +30,6 @@
                 groupBy: 'category',
                 height: 120,
                 isOrdinal: true
-            }, {
-                chartType: 'pie',
-                title: 'Sum by Category',
-                description: 'Total number of items, grouped by the category of media',
-                groupBy: 'category',
-                radius: 55,
-                innerRadius: 40,
-                height: 120,
-                width: 350
-            }, {
-                chartType: 'number',
-                title: 'Movies',
-                numberFormat: 'g',
-                filter: d => d.category === 'Movies'
-            }, {
-                chartType: 'number',
-                title: 'TV',
-                numberFormat: 'g',
-                filter: d => d.category === 'TV'
             }
         ]
     };
