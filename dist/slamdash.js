@@ -192,6 +192,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (config.chartType === 'row') {
 	            return this.rowChart(selector, config);
 	        }
+	        if (config.chartType === 'series') {
+	            return this.seriesChart(selector, config);
+	        }
 	    };
 	    DCChartProvider.prototype.addData = function (data) {
 	        this.index.add(data);
@@ -344,6 +347,30 @@ return /******/ (function(modules) { // webpackBootstrap
 	        };
 	        handler();
 	        window.addEventListener('resize', handler, false);
+	    };
+	    DCChartProvider.prototype.seriesChart = function (selector, config) {
+	        var dimension = this.index.dimension(function (d) { return [d[config.groupBy], d[config.timeField]]; });
+	        var group = this.groupMode === 'sum'
+	            ? dimension.group().reduceSum(dc.pluck(this.sumBy))
+	            : dimension.group().reduceCount();
+	        var range = this.index.dimension(dc.pluck(config.timeField));
+	        var chart = dc.seriesChart(selector);
+	        chart
+	            .dimension(dimension)
+	            .group(group)
+	            .seriesAccessor(function (d) { return d.key[0]; })
+	            .keyAccessor(function (d) { return d.key[1]; })
+	            .valueAccessor(function (d) { return d.value; })
+	            .x(d3.time.scale())
+	            .brushOn(false)
+	            .on('preRender', function (chart) {
+	            var dates = range.top(Infinity).map(dc.pluck(config.timeField)).sort(d3.ascending);
+	            var minDate = dates.length === 0 ? new Date(0) : dates[0];
+	            var maxDate = dates.length === 0 ? new Date(0) : dates[dates.length - 1];
+	            chart.x(d3.time.scale().domain([minDate, maxDate]));
+	        });
+	        chart.canResize = true;
+	        return chart;
 	    };
 	    return DCChartProvider;
 	}());

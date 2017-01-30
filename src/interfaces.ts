@@ -79,3 +79,8 @@ interface RowChartConfig extends ChartConfig, CappedChart, GroupedChart, Categor
     elasticAxis?: boolean;
     ticks?: number;
 }
+
+interface SeriesChartConfig extends ChartConfig, CategorizedChart, GroupedChart {
+    timeField?: string;
+    valueField?: string;
+}

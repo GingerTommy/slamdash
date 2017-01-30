@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Example slamdash dashboard</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' />
+    <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../node_modules/keen-dashboards/dist/keen-dashboards.css">
+    <link rel="stylesheet" href="../node_modules/dc/dc.min.css">
+    <style>
+        .number-display div {
+            font-size: 64px;
+            height: 156px;
+            line-height: normal;
+            padding-bottom: 33px;
+            padding-top: 33px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body class="application">
+    <div id="dashboard"></div>
+    
+    <script src="../node_modules/d3/d3.min.js"></script>
+    <script src="../node_modules/crossfilter2/crossfilter.min.js"></script>
+    <script src="../node_modules/dc/dc.min.js"></script>
+    <script src="../node_modules/handlebars/dist/handlebars.min.js"></script>
+    <script src="../dist/slamdash.js"></script>
+    <script>
+        var config = {
+            selector: '#dashboard',
+            layoutName: 'heroThirds',
+            charts: [
+            {
+                chartType: 'series',
+                title: 'Sum of count by Category over time',
+                groupBy: 'category',
+                timeField: 'release',
+                valueField: 'count',
+                height: 240
+            }, {
+                chartType: 'pie',
+                title: 'Sum by Title',
+                groupBy: 'title',
+                height: 240
+            }
+        ]
+    };
+    var layoutProvider = new slamdash.keenLayoutProvider();
+    var chartProvider = new slamdash.dcChartProvider('count');
+    var dashboard = new slamdash.dashboard(layoutProvider, chartProvider, config);
+
+    chartProvider
+        .addData([
+            { title: 'Star Wars', category: 'Movies', release: new Date(2017, 0, 1), count: 8 },
+            { title: 'Star Wars', category: 'TV', release: new Date(2017, 0, 1), count: 1 },
+            { title: 'Star Trek', category: 'Movies', release: new Date(2017, 1, 1), count: 7 },
+            { title: 'Star Trek', category: 'TV', release: new Date(2017, 1, 1), count: 6 },
+            { title: 'Star Wars', category: 'Movies', release: new Date(2017, 2, 1), count: 12 },
+            { title: 'Star Wars', category: 'TV', release: new Date(2017, 2, 1), count: 2 },
+            { title: 'Star Trek', category: 'Movies', release: new Date(2017, 3, 1), count: 5 },
+            { title: 'Star Trek', category: 'TV', release: new Date(2017, 4, 1), count: 11 }
+        ])
+        .loadComplete()
+        .refresh();
+    </script>
+</body>
+</html>

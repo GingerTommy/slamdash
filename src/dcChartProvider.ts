@@ -33,6 +33,10 @@ class DCChartProvider implements ChartProvider {
         if (config.chartType === 'row') {
             return this.rowChart(selector, config as RowChartConfig);
         }
+
+        if (config.chartType === 'series') {
+            return this.seriesChart(selector, config as SeriesChartConfig);
+        }
     }
 
     public addData(data: Array<any>): ChartProvider {
@@ -218,6 +222,32 @@ class DCChartProvider implements ChartProvider {
         };
         handler();
         window.addEventListener('resize', handler, false);
+    }
+
+    private seriesChart(selector: string, config: SeriesChartConfig) {
+        const dimension = this.index.dimension(d => [d[config.groupBy], d[config.timeField]]);
+        const group = this.groupMode === 'sum'
+            ? dimension.group().reduceSum(dc.pluck(this.sumBy))
+            : dimension.group().reduceCount();
+        const range = this.index.dimension(dc.pluck(config.timeField));
+        const chart = dc.seriesChart(selector);
+        chart
+            .dimension(dimension)
+            .group(group)
+            .seriesAccessor(d => d.key[0])
+            .keyAccessor(d => d.key[1])
+            .valueAccessor(d => d.value)
+            .x(d3.time.scale())
+            .brushOn(false)
+            .on('preRender', chart => {
+                const dates = range.top(Infinity).map(dc.pluck(config.timeField)).sort(d3.ascending);
+                const minDate = dates.length === 0 ? new Date(0) : dates[0];
+                const maxDate = dates.length === 0 ? new Date(0) : dates[dates.length - 1];
+                chart.x(d3.time.scale().domain([minDate, maxDate]));
+            });
+
+        (chart as any).canResize = true;
+        return chart;
     }
 }
 
